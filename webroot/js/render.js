@@ -1,23 +1,24 @@
 //Global vars
 var pages = ["Home", "Walk-Score", "Hospitals", "Parks", "Culture", "Jobs", "Schools", "Art", "Crime", "Property", "Concerts", "Food"];
 var currentPage = pages[0];
-var showMap = true;
+var showMap = true; //this is used to hide/show the toggle map option and hides the google map
 var leftContentDiv = "left-content";
 
 //basic breakpoint where map hides but nav remains ok
-function mediaQuery(){
+function mediaQuery() {
    var mq = window.matchMedia("(min-width: 1029px)");
-   if(mq.matches){
+   if (mq.matches) {
       return true;
    }
 }
 
 //secondary breakpoint where nav should be hidden/displayed differently to avoid overlap with title
-function mediaQueryNav(){
+function mediaQueryNav() {
    var mq = window.matchMedia("(max-width: 490px)");
-   if(mq.matches){
+   if (mq.matches) {
       return true;
-   }else{
+   }
+   else {
       return false;
    }
 }
@@ -31,16 +32,17 @@ function render_nav() {
          '<span class="icon-bar"></span>' +
          '<span class="icon-bar"></span>' +
          '<span class="icon-bar"></span></button>' +
-  	     '<a href="#" class="navbar-brand">Home</a></div>"' +
+         '<a href="#" class="navbar-brand">Home</a></div>"' +
          '<div class="collapse navbar-collapse" id="nav-collapse">' +
-    	 '<ul id="dropdown" class="nav navbar-nav">';
+         '<ul id="dropdown" class="nav navbar-nav">';
       // Avoid the home nav entry for mobile
       for (var i = 1; i < pages.length; i++) {
          navbar += "<li>" + linkify(pages[i]) + "</li>";
       }
-  } else {
+   }
+   else {
       navbar = '<div class="collapse navbar-collapse" id="nav-collapse">' +
-      '<ul id="dropdown" class="nav navbar-nav">';
+         '<ul id="dropdown" class="nav navbar-nav">';
       // Include the home nav entry for desktop
       for (var i = 0; i < pages.length; i++) {
          navbar += "<li>" + linkify(pages[i]) + "</li>";
@@ -59,64 +61,88 @@ function render_page(name) {
    currentPage = name;
    switch (name) {
       case "Home":
+         //$("").css("", ""); //this resets the css to default style specs and not inline specs defined in crimes below
+         resetRightContent(); //sets the css back to style sheet specs
          render_tiles();
          return;
       case "Hospitals":
+         resetRightContent(); //sets the css to style sheet specs
          str = getHospData(loc, true);
          break;
       case "Property":
          getPropertyData(loc,
-            function(success) { update_div(leftContentDiv, success);},
-            function(error)   { update_div(leftContentDiv, error); });
+            function(success) { update_div(leftContentDiv, success); },
+            function(error) { update_div(leftContentDiv, error); });
          str = "Loading.....";
          return;
       case "Parks":
+         resetRightContent(); //sets the css to style sheet specs
          getParks(loc,
-            function(success) { update_div(leftContentDiv, success);},
-            function(error)   { update_div(leftContentDiv, error); });
+            function(success) { update_div(leftContentDiv, success); },
+            function(error) { update_div(leftContentDiv, error); });
          return;
       case "Culture":
+         resetRightContent(); //sets the css to style sheet specs
          getCultureData(loc,
-            function(success) { update_div(leftContentDiv, success);},
-            function(error)   { update_div(leftContentDiv, error); });
+            function(success) { update_div(leftContentDiv, success); },
+            function(error) { update_div(leftContentDiv, error); });
          return;
       case "Schools":
+         resetRightContent(); //sets the css to style sheet specs
          getSchoolsData(loc,
-            function(success) { update_div(leftContentDiv, success);},
-            function(error)   { update_div(leftContentDiv, error); });
+            function(success) { update_div(leftContentDiv, success); },
+            function(error) { update_div(leftContentDiv, error); });
          return;
       case "Walk-Score":
+         resetRightContent(); //sets the css to style sheet specs
          getWalkScoreData(loc,
-            function(success) { update_div(leftContentDiv, success);},
-            function(error)   { update_div(leftContentDiv, error); });
+            function(success) { update_div(leftContentDiv, success); },
+            function(error) { update_div(leftContentDiv, error); });
          return;
       case "Jobs":
+         resetRightContent(); //sets the css to style sheet specs
          getJobsData(loc,
-            function(success) { update_div(leftContentDiv, success);},
-            function(error)   { update_div(leftContentDiv, error); });
+            function(success) { update_div(leftContentDiv, success); },
+            function(error) { update_div(leftContentDiv, error); });
          return;
       case "Concerts":
+         resetRightContent(); //sets the css back to sheet specs
          getConcertData(loc,
-            function(success) { update_div(leftContentDiv, success);},
-            function(error)   { update_div(leftContentDiv, error); },
+            function(success) { update_div(leftContentDiv, success); },
+            function(error) { update_div(leftContentDiv, error); },
             true);
          return;
       case "Art":
+         resetRightContent(); //sets the css to style sheet specs
          getPublicArtData(loc,
-            function(success) { update_div(leftContentDiv, success);},
-            function(error)   { update_div(leftContentDiv, error); },
+            function(success) { update_div(leftContentDiv, success); },
+            function(error) { update_div(leftContentDiv, error); },
             true);
          return;
       case "Crime":
+         // showMap = false; //this hides the "toggle map" option in nav bar
+
+         //update css only for this page to make google map larger and 
+         //appear on top of table pages above will get reset back to original css 
+         //$("#right-content").css("float", "left");
+         $("#right-content").css("width", "100%");
+         $("#right-content").css("padding", "3%");
+         //$("#right-content").css("padding", "10px");
+         //$("#left-content").css("width", "100%");
+         //$("#left-content").css("clear", "right");
+         //TODO: find where mobileSearch is an test for map in smaller screens 
+         //$("#mobileSearch").css("float", "left");
+
          getCrimeDetailData(loc,
-            function(success) { update_div(leftContentDiv, success);},
-            function(error)   { update_div(leftContentDiv, error); },
+            function(success) { update_div(leftContentDiv, success); },
+            function(error) { update_div(leftContentDiv, error); },
             true);
          return;
       case "Food":
+         resetRightContent(); //sets the css to style sheet specs
          getFoodDetailData(loc,
-            function(success) { update_div(leftContentDiv, success);},
-            function(error)   { update_div(leftContentDiv, error);});
+            function(success) { update_div(leftContentDiv, success); },
+            function(error) { update_div(leftContentDiv, error); });
          return;
       default:
          str = "Hey, now we're going to render " + name;
@@ -133,10 +159,12 @@ function render_tiles() {
    var data = document.location.hash.substr(1);
    if (!!data && data != "Home") {
       render_page(data);
-   } else {
-       var tiles = '<div class="tile-container">';
-      for (var i = 1; i < pages.length; i++) {     //Start at 1 to skip 'Home' tile
-         var tile = "", page = pages[i].replace(" ", "");
+   }
+   else {
+      var tiles = '<div class="tile-container">';
+      for (var i = 1; i < pages.length; i++) { //Start at 1 to skip 'Home' tile
+         var tile = "",
+            page = pages[i].replace(" ", "");
          tile += "<a href='#" + page + "'>";
          tile += "<div class='tile " + page + "'><span class='" + get_icon(pages[i]) + "'></span>";
          tile += get_summary(pages[i]);
@@ -165,37 +193,37 @@ function get_summary(page) {
       case "Walk-Score":
          sum += "<li>Loading Walk-Score Data...</li>";
          getWalkScoreSummary(loc,
-            function(success) {update_div("Walk-Score_tile", success);},
-            function(error)   {update_div("Walk-Score_tile",  error); });
+            function(success) { update_div("Walk-Score_tile", success); },
+            function(error) { update_div("Walk-Score_tile", error); });
          break;
       case "Art":
          sum += "<li>Loading Art Data...</li>";
          getPublicArtSummary(loc,
-            function(success) {update_div("Art_tile", success);},
-            function(error)   {update_div("Art_tile",  error); });
+            function(success) { update_div("Art_tile", success); },
+            function(error) { update_div("Art_tile", error); });
          break;
       case "Culture":
          getCultureDataSummary(loc,
-            function(success) {update_div("Culture_tile", success);},
-            function(error)   {update_div("Culture_tile",  error); });
+            function(success) { update_div("Culture_tile", success); },
+            function(error) { update_div("Culture_tile", error); });
          break;
       case "Crime":
          sum += '<li>Loading Crime Data...</li>';
          getCrimeSummary(loc,
-            function(success) {update_div("Crime_tile", success);},
-            function(error)   {update_div("Crime_tile", error);  });
+            function(success) { update_div("Crime_tile", success); },
+            function(error) { update_div("Crime_tile", error); });
          break;
       case "Parks":
          sum += "<li>Loading Parks Data...</li>";
          getParksSummary(loc,
-            function(success) {update_div("Parks_tile", success);},
-            function(error)   {update_div("Parks_tile", error);  });
+            function(success) { update_div("Parks_tile", success); },
+            function(error) { update_div("Parks_tile", error); });
          break;
       case "Concerts":
          sum += "<li>Loading Concert Data...</li>";
          getConcertData(loc,
-            function(success) {update_div("Concerts_tile", success);},
-            function(error)   {update_div("Concerts_tile", error);  },
+            function(success) { update_div("Concerts_tile", success); },
+            function(error) { update_div("Concerts_tile", error); },
             false);
          break;
       case "Jobs":
@@ -206,26 +234,26 @@ function get_summary(page) {
                "<li>Avg Company: " + get_stars(avgCompany) +
                "&nbsp;(" + avgCompany + ")</li>";
             update_div("Jobs_tile", html);
-            $("#Jobs_tile").fadeIn("slow", function(){});
+            $("#Jobs_tile").fadeIn("slow", function() {});
          });
          break;
       case "Property":
-         sum+= '<li>Loading Data...</li>';
+         sum += '<li>Loading Data...</li>';
          getPropertySummary(loc,
-            function(success) {update_div("Property_tile", success);},
-            function(error)   {update_div("Property_tile", error);});
+            function(success) { update_div("Property_tile", success); },
+            function(error) { update_div("Property_tile", error); });
          break;
       case "Food":
          sum += '<li>Loading Data...</li>';
          getFoodSummary(loc,
-            function(success) {update_div("Food_tile", success);},
-            function(error)   {update_div("Food_tile", error);  });
+            function(success) { update_div("Food_tile", success); },
+            function(error) { update_div("Food_tile", error); });
          break;
       case "Schools":
          sum += '<li>Loading Data...</li>';
          getSchoolsSummary(loc,
-            function(success) {update_div("Schools_tile", success);},
-            function(error)   {update_div("Schools_tile", error); }, false);
+            function(success) { update_div("Schools_tile", success); },
+            function(error) { update_div("Schools_tile", error); }, false);
          break;
       default:
          sum += "<li>Pertinent Point</li>" +
@@ -296,7 +324,17 @@ function setFocus(elem) {
    deleteMarkers();
 }
 
-window.onhashchange = function () {
+window.onhashchange = function() {
    var data = document.location.hash.substr(1);
    !!data ? render_page(data) : render_page(pages[0]);
 };
+
+//this function is used above in the switch statement
+//it resets the right content div (which holds the map) to the original css styles in 
+//the style sheet we are using this becuase crimes page over rides the 
+//width of this div and we need to set it back to original css when clicking 
+// on a other pages. 
+var resetRightContent = function() {
+   $("#right-content").css("width", "");
+   $("#right-content").css("padding", "");
+}
