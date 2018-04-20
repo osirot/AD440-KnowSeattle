@@ -28,7 +28,6 @@ function initMap() {
          geocoder = new google.maps.Geocoder();
          infoWindow = new google.maps.InfoWindow({ map: gmap });
 
-
          //Try to get the browser location
          if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
@@ -38,7 +37,6 @@ function initMap() {
                   rad: 1500
                };
                reverseGeocodeAddress(geocoder, gmap, loc);
-
             });
          }
          else {
@@ -173,7 +171,6 @@ function updateDOM(gmap, loc) {
       resultString = loc.err;
    }
    else {
-      //heatmap.setMap(null)
       infoWindow.setPosition(loc);
       infoWindow.setContent(resultString);
 
@@ -183,7 +180,6 @@ function updateDOM(gmap, loc) {
       // infowindow.open(map, marker);
 
       gmap.setCenter({ lat: loc.lat, lng: loc.lng });
-
       gmap.setZoom(detailZoom);
       resultString = "latitude: " + loc.lat + "<br>longitude: " + loc.lng + "<br>radius: " + loc.rad;
       if (loc.zip) {

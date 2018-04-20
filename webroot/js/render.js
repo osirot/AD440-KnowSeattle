@@ -59,14 +59,17 @@ function render_nav() {
 function render_page(name) {
    var str;
    currentPage = name;
+   //check if the heat map array of data is empty if not clear it before updating to new coords
+   clearHeatMap();
+   //sets the css back to style sheet specs
+   resetRightContent();
+
    switch (name) {
       case "Home":
-         //$("").css("", ""); //this resets the css to default style specs and not inline specs defined in crimes below
-         resetRightContent(); //sets the css back to style sheet specs
          render_tiles();
          return;
       case "Hospitals":
-         resetRightContent(); //sets the css to style sheet specs
+         //resetRightContent(); //sets the css to style sheet specs
          str = getHospData(loc, true);
          break;
       case "Property":
@@ -76,68 +79,56 @@ function render_page(name) {
          str = "Loading.....";
          return;
       case "Parks":
-         resetRightContent(); //sets the css to style sheet specs
          getParks(loc,
             function(success) { update_div(leftContentDiv, success); },
             function(error) { update_div(leftContentDiv, error); });
          return;
       case "Culture":
-         resetRightContent(); //sets the css to style sheet specs
          getCultureData(loc,
             function(success) { update_div(leftContentDiv, success); },
             function(error) { update_div(leftContentDiv, error); });
          return;
       case "Schools":
-         resetRightContent(); //sets the css to style sheet specs
          getSchoolsData(loc,
             function(success) { update_div(leftContentDiv, success); },
             function(error) { update_div(leftContentDiv, error); });
          return;
       case "Walk-Score":
-         resetRightContent(); //sets the css to style sheet specs
          getWalkScoreData(loc,
             function(success) { update_div(leftContentDiv, success); },
             function(error) { update_div(leftContentDiv, error); });
          return;
       case "Jobs":
-         resetRightContent(); //sets the css to style sheet specs
          getJobsData(loc,
             function(success) { update_div(leftContentDiv, success); },
             function(error) { update_div(leftContentDiv, error); });
          return;
       case "Concerts":
-         resetRightContent(); //sets the css back to sheet specs
          getConcertData(loc,
             function(success) { update_div(leftContentDiv, success); },
             function(error) { update_div(leftContentDiv, error); },
             true);
          return;
       case "Art":
-         resetRightContent(); //sets the css to style sheet specs
          getPublicArtData(loc,
             function(success) { update_div(leftContentDiv, success); },
             function(error) { update_div(leftContentDiv, error); },
             true);
          return;
       case "Crime":
-
          // showMap = false; //this hides the "toggle map" option in nav bar
-
          //update css only for this page to make google map larger and 
          //appear on top of table pages above will get reset back to original css 
          $("#right-content").css("width", "100%");
          $("#right-content").css("padding", "3%");
-
          //TODO: find where mobileSearch is and test for map in smaller screens 
          //$("#mobileSearch").css("float", "left");
-
          getCrimeDetailData(loc,
             function(success) { update_div(leftContentDiv, success); },
             function(error) { update_div(leftContentDiv, error); },
             true);
          return;
       case "Food":
-         resetRightContent(); //sets the css to style sheet specs
          getFoodDetailData(loc,
             function(success) { update_div(leftContentDiv, success); },
             function(error) { update_div(leftContentDiv, error); });
@@ -335,4 +326,16 @@ window.onhashchange = function() {
 var resetRightContent = function() {
    $("#right-content").css("width", "");
    $("#right-content").css("padding", "");
-}
+};
+
+//this method is used to check if the heat map array of data 
+//is empty if not clear it before updating to new coords
+//the heat map gets populated in the crime.js file. 
+//It should get cleared before rendering each new page 
+var clearHeatMap = function() {
+   //check if the heat map array of data is empty if not clear it before updating to new coords
+   if (heatmap != null && heatmap.getData().j != []) {
+      heatmap.getData().j = [];
+      heatmap.setMap(null);
+   }
+};

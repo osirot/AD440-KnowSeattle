@@ -8,11 +8,6 @@ function getCrimeDetailData(loc, success, error) {
 
 	//this array holds google.maps.LatLng objects for each pair of lat/lon returned from seattle gov api call
 	var heatMapDataPoints = [];
-	//check if the heat map array of data is empty if not clear it before updating to new coords
-	if (heatmap != null && heatmap.getData().j != []) {
-		heatmap.getData().j = [];
-		heatmap.setMap(null);
-	}
 
 	//Figure out the last six months and get in range
 	var date_marker = new Date(new Date().getFullYear(), new Date().getMonth(), 01);
@@ -42,13 +37,11 @@ function getCrimeDetailData(loc, success, error) {
 		for (var i = 0; i < tableCols.length; i++) {
 			tableString += '<th>' + tableCols[i] + '</th>';
 		}
-
 		var grouped_data = [];
 		$.each(data, function(index, value) {
 
-			//add points into the heat map array
+			//add crime data points into the heat map array as LatLng objects
 			heatMapDataPoints.push(new google.maps.LatLng(value.latitude, value.longitude));
-
 
 			var monthdate = new Date(value.date_reported.toString())
 			monthdate.setTime(monthdate.getTime() + monthdate.getTimezoneOffset() * 60 * 1000);
@@ -93,44 +86,28 @@ function getCrimeDetailData(loc, success, error) {
 				nw.count = 1;
 				selectedMonthGroup.types.push(nw);
 			}
-
-
-
-
 		});
 
+		//this is for testing to see what is in the heatMapData array of crime lat/lon points
 		console.log("logging heatMapDataPoints below expecting to be full of crime points");
 		console.log(heatMapDataPoints);
-
+		//set heatmap variable to a new heatmaplayer, set the heatlayer data to 
+		//the heatMapDataPoints(holds crime LatLng objects) and set the heatmap to the gmap
 		heatmap = new google.maps.visualization.HeatmapLayer({
-			data: heatMapDataPoints //doesnt work on the first pass for some reason only works for second pass (refresh page)
+			data: heatMapDataPoints
 		});
 		heatmap.setMap(gmap);
-
-		//heatmap.setMap(null);
-		//heatmap.getData().j = [];
-		//heatMapDataPoints.length = 0;
-		//console.log("logging heatmap.getData().j below this should be 0");
-		//console.log(heatmap.getData().j);
-		//console.log("logging heatMapDataPoints below this should be 0");
-		//console.log(heatMapDataPoints);
-
-
-
 
 		$.each(grouped_data, function(index, value) {
 			var simplePropertyRetriever = function(obj) {
 				return obj.count;
 			};
-
 			sort(simplePropertyRetriever, value.types);
 
 			value.first_common_type = value.types[0].name + ' (' + value.types[0].count + ')';
 			value.second_common_type = value.types[1].name + ' (' + value.types[1].count + ')';
 			value.third_common_type = value.types[2].name + ' (' + value.types[2].count + ')';
 		});
-
-
 		// Tablefy for display
 		grouped_data.reverse();
 		$.each(grouped_data, function(index, value) {
@@ -139,16 +116,14 @@ function getCrimeDetailData(loc, success, error) {
 				crimeHtmlEncode(grouped_data[index].first_common_type) + '</td><td>' +
 				crimeHtmlEncode(grouped_data[index].second_common_type) + '</td><td>' +
 				crimeHtmlEncode(grouped_data[index].third_common_type) + '</td></tr>';
-
-
 		});
 		//tableString += "</table><div id='chart_div'></div>";
 		tableString += "</table><div id='map_div'></div>";
-		/*
+
+		/* //line 130 is throwing an error and not loading. I am commenting out for now
 		// Load the Visualization API and the corechart package.
 		google.charts.load('current', { 'packages': ['corechart'] });
-
-
+		
 		google.charts.setOnLoadCallback(function() {
 			// Create the data table.
 			var data = new google.visualization.DataTable();
@@ -157,14 +132,12 @@ function getCrimeDetailData(loc, success, error) {
 			for (var i = 0; i < 10; i++) {
 				data.addRow([grouped_data[0].types[i].name, grouped_data[0].types[i].count]);
 			}
-
 			// Set chart options
 			var options = {
 				'title': 'Most common crimes in ' + displayMonthYear(grouped_data[0].grouped_month),
 				'width': 800,
 				'height': 400
 			};
-
 			// Instantiate and draw our chart, passing in some options.
 			if ($("#chart_div").length == 0) {
 				$(".left-content").append("<div id='chart_div'></div>");
@@ -173,9 +146,7 @@ function getCrimeDetailData(loc, success, error) {
 			chart.draw(data, options);
 		});
 		*/
-
 		return success(tableString);
-
 
 	}).fail(function(data) {
 		var out = '<div>There was a problem getting the crime data in your area. </div>';
@@ -252,7 +223,6 @@ function getCrimeSummary(loc, success, error) {
 		error(out);
 	});
 }
-
 
 function crimeHtmlEncode(value) {
 	//create a in-memory div, set it's inner text(which jQuery automatically encodes)
