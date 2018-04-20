@@ -1,9 +1,18 @@
+//heatmap.setMap(null)
+var heatmap;
+
 function getCrimeDetailData(loc, success, error) {
 	var loc_lat = loc.lat;
 	var loc_long = loc.lng;
 	var radiusMeters = loc.rad;
 
-	var heatMapDataPoints = []; //this array holds google.maps.LatLng objects for each pair of lat/lon returned from seattle gov api call
+	//this array holds google.maps.LatLng objects for each pair of lat/lon returned from seattle gov api call
+	var heatMapDataPoints = [];
+	//check if the heat map array of data is empty if not clear it before updating to new coords
+	if (heatmap != null && heatmap.getData().j != []) {
+		heatmap.getData().j = [];
+		heatmap.setMap(null);
+	}
 
 	//Figure out the last six months and get in range
 	var date_marker = new Date(new Date().getFullYear(), new Date().getMonth(), 01);
@@ -90,12 +99,21 @@ function getCrimeDetailData(loc, success, error) {
 
 		});
 
+		console.log("logging heatMapDataPoints below expecting to be full of crime points");
 		console.log(heatMapDataPoints);
 
-		var heatmap = new google.maps.visualization.HeatmapLayer({
+		heatmap = new google.maps.visualization.HeatmapLayer({
 			data: heatMapDataPoints //doesnt work on the first pass for some reason only works for second pass (refresh page)
 		});
 		heatmap.setMap(gmap);
+
+		//heatmap.setMap(null);
+		//heatmap.getData().j = [];
+		//heatMapDataPoints.length = 0;
+		//console.log("logging heatmap.getData().j below this should be 0");
+		//console.log(heatmap.getData().j);
+		//console.log("logging heatMapDataPoints below this should be 0");
+		//console.log(heatMapDataPoints);
 
 
 

@@ -22,20 +22,11 @@ function initMap() {
             zoom: 13,
             center: loc,
             scroll: false,
-            mapTypeId: 'satellite'
+            mapTypeId: 'hybrid'
          });
          //Stand up the google services
          geocoder = new google.maps.Geocoder();
          infoWindow = new google.maps.InfoWindow({ map: gmap });
-
-
-         /*
-         var heatmap = new google.maps.visualization.HeatmapLayer({
-            data: crimeDataPoints //doesnt work on the first pass for some reason only works for second pass (refresh page)
-         });
-         heatmap.setMap(gmap);
-         */
-
 
 
          //Try to get the browser location
@@ -182,6 +173,7 @@ function updateDOM(gmap, loc) {
       resultString = loc.err;
    }
    else {
+      //heatmap.setMap(null)
       infoWindow.setPosition(loc);
       infoWindow.setContent(resultString);
 
@@ -191,6 +183,7 @@ function updateDOM(gmap, loc) {
       // infowindow.open(map, marker);
 
       gmap.setCenter({ lat: loc.lat, lng: loc.lng });
+
       gmap.setZoom(detailZoom);
       resultString = "latitude: " + loc.lat + "<br>longitude: " + loc.lng + "<br>radius: " + loc.rad;
       if (loc.zip) {
