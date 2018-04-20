@@ -120,17 +120,15 @@ function render_page(name) {
             true);
          return;
       case "Crime":
+
          // showMap = false; //this hides the "toggle map" option in nav bar
 
          //update css only for this page to make google map larger and 
          //appear on top of table pages above will get reset back to original css 
-         //$("#right-content").css("float", "left");
          $("#right-content").css("width", "100%");
          $("#right-content").css("padding", "3%");
-         //$("#right-content").css("padding", "10px");
-         //$("#left-content").css("width", "100%");
-         //$("#left-content").css("clear", "right");
-         //TODO: find where mobileSearch is an test for map in smaller screens 
+
+         //TODO: find where mobileSearch is and test for map in smaller screens 
          //$("#mobileSearch").css("float", "left");
 
          getCrimeDetailData(loc,

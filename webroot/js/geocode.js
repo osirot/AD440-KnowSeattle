@@ -28,36 +28,14 @@ function initMap() {
          geocoder = new google.maps.Geocoder();
          infoWindow = new google.maps.InfoWindow({ map: gmap });
 
-         /* a test -- this works for sanfrancisco but it loads into everysingle page
-         // Data points defined as an array of LatLng objects 
-         var heatmapData = [
-            new google.maps.LatLng(37.782, -122.447),
-            new google.maps.LatLng(37.782, -122.445),
-            new google.maps.LatLng(37.782, -122.443),
-            new google.maps.LatLng(37.782, -122.441),
-            new google.maps.LatLng(37.782, -122.439),
-            new google.maps.LatLng(37.782, -122.437),
-            new google.maps.LatLng(37.782, -122.435),
-            new google.maps.LatLng(37.785, -122.447),
-            new google.maps.LatLng(37.785, -122.445),
-            new google.maps.LatLng(37.785, -122.443),
-            new google.maps.LatLng(37.785, -122.441),
-            new google.maps.LatLng(37.785, -122.439),
-            new google.maps.LatLng(37.785, -122.437),
-            new google.maps.LatLng(37.785, -122.435)
-         ];
-         var sanFrancisco = new google.maps.LatLng(37.774546, -122.433523);
-         map = new google.maps.Map(document.getElementById('map'), {
-            center: sanFrancisco,
-            zoom: 13,
-            mapTypeId: 'satellite'
-         }); */
-         /*global heatMapPoints */
+
+         /*
          var heatmap = new google.maps.visualization.HeatmapLayer({
-            data: heatMapPoints //doesnt work on the first pass for some reason only works for second pass (refresh page)
+            data: crimeDataPoints //doesnt work on the first pass for some reason only works for second pass (refresh page)
          });
          heatmap.setMap(gmap);
-       
+         */
+
 
 
          //Try to get the browser location

@@ -1,10 +1,9 @@
-var heatMapPoints = []; //this array holds google.maps.LatLng objects for each pair of lat/lon returned from seattle gov api call
-var MapPoints = []; //this is just for testing to see which lat/lon are being returned from seattle gov api call for a given region
-
 function getCrimeDetailData(loc, success, error) {
 	var loc_lat = loc.lat;
 	var loc_long = loc.lng;
 	var radiusMeters = loc.rad;
+
+	var heatMapDataPoints = []; //this array holds google.maps.LatLng objects for each pair of lat/lon returned from seattle gov api call
 
 	//Figure out the last six months and get in range
 	var date_marker = new Date(new Date().getFullYear(), new Date().getMonth(), 01);
@@ -39,8 +38,8 @@ function getCrimeDetailData(loc, success, error) {
 		$.each(data, function(index, value) {
 
 			//add points into the heat map array
-			heatMapPoints.push(new google.maps.LatLng(value.latitude, value.longitude));
-			//MapPoints.push(value.latitude, value.longitude); //this returns an array of all lat/lon points
+			heatMapDataPoints.push(new google.maps.LatLng(value.latitude, value.longitude));
+
 
 			var monthdate = new Date(value.date_reported.toString())
 			monthdate.setTime(monthdate.getTime() + monthdate.getTimezoneOffset() * 60 * 1000);
@@ -91,7 +90,14 @@ function getCrimeDetailData(loc, success, error) {
 
 		});
 
-		console.log(heatMapPoints);
+		console.log(heatMapDataPoints);
+
+		var heatmap = new google.maps.visualization.HeatmapLayer({
+			data: heatMapDataPoints //doesnt work on the first pass for some reason only works for second pass (refresh page)
+		});
+		heatmap.setMap(gmap);
+
+
 
 
 		$.each(grouped_data, function(index, value) {
