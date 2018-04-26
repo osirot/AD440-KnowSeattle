@@ -1,13 +1,21 @@
-//heatmap.setMap(null)
-var heatmap;
+//var heatmap;
+var crimeCircleArray;
 
 function getCrimeDetailData(loc, success, error) {
+	/*
+		if (crimeCircle != null) {
+			crimeCircle.setMap(null);
+		}*/
+	//	var crimeCircle = null;
+
 	var loc_lat = loc.lat;
 	var loc_long = loc.lng;
 	var radiusMeters = loc.rad;
 
 	//this array holds google.maps.LatLng objects for each pair of lat/lon returned from seattle gov api call
-	var heatMapDataPoints = [];
+	//var heatMapDataPoints = [];
+	var crimeDataArr = []; //this array will hold crimeData Objects for circle map
+	crimeCircleArray = []; //this array holds google.map.circle objects start out with an empty array when crime page loads
 
 	//Figure out the last six months and get in range
 	var date_marker = new Date(new Date().getFullYear(), new Date().getMonth(), 01);
@@ -38,12 +46,21 @@ function getCrimeDetailData(loc, success, error) {
 			tableString += '<th>' + tableCols[i] + '</th>';
 		}
 		var grouped_data = [];
+
 		$.each(data, function(index, value) {
 
 			//add crime data points into the heat map array as LatLng objects
-			heatMapDataPoints.push(new google.maps.LatLng(value.latitude, value.longitude));
+			//heatMapDataPoints.push(new google.maps.LatLng(value.latitude, value.longitude));
 
-			var monthdate = new Date(value.date_reported.toString())
+			//push new objects to the array that hold the crime lat/lon and color for crime type
+			crimeDataArr.push({
+				//center: { lat: Number(value.latitude), lng: Number(value.longitude) },
+				center: new google.maps.LatLng(value.latitude, value.longitude),
+				crimeDescription: value.summarized_offense_description,
+				color: "#00FFFF"
+			});
+
+			var monthdate = new Date(value.date_reported.toString());
 			monthdate.setTime(monthdate.getTime() + monthdate.getTimezoneOffset() * 60 * 1000);
 			monthdate.setDate(1);
 			monthdate.setHours(1);
@@ -88,15 +105,54 @@ function getCrimeDetailData(loc, success, error) {
 			}
 		});
 
-		//this is for testing to see what is in the heatMapData array of crime lat/lon points
-		console.log("logging heatMapDataPoints below expecting to be full of crime points");
-		console.log(heatMapDataPoints);
-		//set heatmap variable to a new heatmaplayer, set the heatlayer data to 
-		//the heatMapDataPoints(holds crime LatLng objects) and set the heatmap to the gmap
-		heatmap = new google.maps.visualization.HeatmapLayer({
-			data: heatMapDataPoints
+		/*
+				//this console.log is for testing to see what is in the heatMapData array of crime lat/lon points
+				console.log("logging heatMapDataPoints below expecting to be full of crime points");
+				console.log(heatMapDataPoints);
+				//set heatmap variable to a new heatmaplayer, set the heatlayer data to 
+				//the heatMapDataPoints(holds crime LatLng objects) and set the heatmap to the gmap
+				heatmap = new google.maps.visualization.HeatmapLayer({
+					data: heatMapDataPoints,
+					gradient: [
+						'rgba(255, 0, 0, 0)',
+						'rgba(255, 255, 0, 0.9)',
+						'rgba(0, 255, 0, 0.7)',
+						'rgba(173, 255, 47, 0.5)',
+						'rgba(152, 251, 152, 0)',
+						'rgba(152, 251, 152, 0)',
+						'rgba(0, 0, 238, 0.5)',
+						'rgba(186, 85, 211, 0.7)',
+						'rgba(255, 0, 255, 0.9)',
+						'rgba(255, 0, 0, 1)'
+					],
+					radius: 20
+				});*/
+
+		// Construct the circle for each value in citymap.
+		//TODO: Note: We scale the area of the circle based on the zoom level.
+		$.each(crimeDataArr, function(index, value) {
+			//console.log("in for loop now pass # " + index);//use for testing only
+			//console.log(value.color + " " + value.center);//use for testing only 
+
+			// Add the circle for this city to the map.
+			var crimeCircle = new google.maps.Circle({
+				strokeColor: value.color,
+				strokeOpacity: 0.5,
+				strokeWeight: 2,
+				fillColor: value.color,
+				fillOpacity: 0.25,
+				map: gmap,
+				center: value.center,
+				radius: 5,
+				draggable: false
+			});
+			crimeCircleArray.push(crimeCircle); //this array should will be cleared out in the render page before crime loads again
 		});
-		heatmap.setMap(gmap);
+		//this logging is for testing purposes
+		//console.log("logging CircleDataPoints below expecting to be full of crime points");
+		//console.log(crimeDataArr);
+		//console.log(crimeCircleArray);
+
 
 		$.each(grouped_data, function(index, value) {
 			var simplePropertyRetriever = function(obj) {

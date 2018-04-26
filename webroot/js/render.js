@@ -60,9 +60,11 @@ function render_page(name) {
    var str;
    currentPage = name;
    //check if the heat map array of data is empty if not clear it before updating to new coords
-   clearHeatMap();
+   // clearHeatMap();
    //sets the css back to style sheet specs
    resetRightContent();
+   //if the crime circle array is not empty, clear it before rendering new page/new location
+   clearCircleMap();
 
    switch (name) {
       case "Home":
@@ -116,11 +118,14 @@ function render_page(name) {
             true);
          return;
       case "Crime":
+
          // showMap = false; //this hides the "toggle map" option in nav bar
          //update css only for this page to make google map larger and 
          //appear on top of table pages above will get reset back to original css 
          $("#right-content").css("width", "100%");
          $("#right-content").css("padding", "3%");
+
+
          //TODO: find where mobileSearch is and test for map in smaller screens 
          //$("#mobileSearch").css("float", "left");
          getCrimeDetailData(loc,
@@ -328,7 +333,8 @@ var resetRightContent = function() {
    $("#right-content").css("padding", "");
 };
 
-//this method is used to check if the heat map array of data 
+/*
+//this function is used to check if the heat map array of data 
 //is empty if not clear it before updating to new coords
 //the heat map gets populated in the crime.js file. 
 //It should get cleared before rendering each new page 
@@ -338,4 +344,14 @@ var clearHeatMap = function() {
       heatmap.getData().j = [];
       heatmap.setMap(null);
    }
-};
+};*/
+
+//this function is used for the circle map in crimes page to clear out the circles for each crime before the new
+//page is rendered
+var clearCircleMap = function() {
+   if (crimeCircleArray != null) {
+      $.each(crimeCircleArray, function(index, value) {
+         value.setMap(null);
+      });
+   }
+}
