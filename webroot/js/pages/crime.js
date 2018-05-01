@@ -2,12 +2,6 @@
 var crimeCircleArray;
 
 function getCrimeDetailData(loc, success, error) {
-	/*
-		if (crimeCircle != null) {
-			crimeCircle.setMap(null);
-		}*/
-	//	var crimeCircle = null;
-
 	var loc_lat = loc.lat;
 	var loc_long = loc.lng;
 	var radiusMeters = loc.rad;
@@ -46,19 +40,26 @@ function getCrimeDetailData(loc, success, error) {
 			tableString += '<th>' + tableCols[i] + '</th>';
 		}
 		var grouped_data = [];
+		var count = 0;
 
 		$.each(data, function(index, value) {
 
 			//add crime data points into the heat map array as LatLng objects
 			//heatMapDataPoints.push(new google.maps.LatLng(value.latitude, value.longitude));
 
-			//push new objects to the array that hold the crime lat/lon and color for crime type
-			crimeDataArr.push({
-				//center: { lat: Number(value.latitude), lng: Number(value.longitude) },
-				center: new google.maps.LatLng(value.latitude, value.longitude),
-				crimeDescription: value.summarized_offense_description,
-				color: "#00FFFF"
-			});
+			//limit the array of crimes for now -- anything higher than 10 thousand will use a lot of computerCPU to run -- will come back to this
+			if (count <= 10000) {
+				var circleColor = assignColor(value.summarized_offense_description);
+				//console.log(circleColor);
+				//push new objects to the array that hold the crime lat/lon and color for crime type
+				crimeDataArr.push({
+					//center: { lat: Number(value.latitude), lng: Number(value.longitude) },
+					center: new google.maps.LatLng(value.latitude, value.longitude),
+					crimeDescription: value.summarized_offense_description,
+					color: circleColor
+				});
+				count++;
+			}
 
 			var monthdate = new Date(value.date_reported.toString());
 			monthdate.setTime(monthdate.getTime() + monthdate.getTimezoneOffset() * 60 * 1000);
@@ -137,10 +138,10 @@ function getCrimeDetailData(loc, success, error) {
 			// Add the circle for this city to the map.
 			var crimeCircle = new google.maps.Circle({
 				strokeColor: value.color,
-				strokeOpacity: 0.5,
-				strokeWeight: 2,
+				strokeOpacity: 1,
+				strokeWeight: 4,
 				fillColor: value.color,
-				fillOpacity: 0.25,
+				fillOpacity: 0.2,
 				map: gmap,
 				center: value.center,
 				radius: 5,
@@ -150,7 +151,7 @@ function getCrimeDetailData(loc, success, error) {
 		});
 		//this logging is for testing purposes
 		//console.log("logging CircleDataPoints below expecting to be full of crime points");
-		//console.log(crimeDataArr);
+		console.log(crimeDataArr);
 		//console.log(crimeCircleArray);
 
 
@@ -306,4 +307,108 @@ var sort = function(propertyRetriever, arr) {
 var displayMonthYear = function(date) {
 	var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", 'December'];
 	return months[date.getMonth()] + " " + date.getFullYear();
+};
+
+
+var assignColor = function(crimeType) {
+	var color = "";
+	switch (crimeType) {
+		//homicide 
+		case 'HOMICIDE':
+			color = "#FF0000";
+			break;
+			//robber/burglary
+		case 'BURGLARY':
+		case 'BURGLARY-SECURE PARKING-RES':
+		case 'ROBBERY':
+			color = "#C71585";
+			break;
+			//assault/injury
+		case 'ASSAULT':
+		case 'INJURY':
+			color = "#FFB6C1";
+			break;
+			//larceny-theft
+		case 'MAIL THEFT':
+		case 'PICKPOCKET':
+		case 'PURSE SNATCH':
+		case 'SHOPLIFTING':
+			color = "#5C5CFF";
+			break;
+			//vehicle theft
+		case 'BIKE THEFT':
+		case 'CAR PROWL':
+		case 'VEHICLE THEFT':
+			color = "#5CADFF";
+			break;
+			//threats
+		case 'THREATS':
+			color = "#ff8c00";
+			break;
+			//WEAPON
+		case 'WEAPON':
+			color = "#B0C4DE";
+			break;
+			//PROSTITUTION
+		case 'PROSTITUTION':
+		case 'STAY OUT OF AREA OF PROSTITUTION':
+			color = "#FF5CFF";
+			break;
+			//burning/fireworks
+		case 'FIREWORK':
+		case 'RECKLESS BURNING':
+			color = "#FFFF5C";
+			break;
+			//fraud
+		case 'COUNTERFEIT':
+		case 'EMBEZZLE':
+		case 'EXTORTION':
+		case 'FORGERY':
+		case 'FRAUD':
+		case 'FRAUD AND FINANCIAL':
+		case 'FRAUD':
+		case 'THEFT OF SERVICES':
+			color = "#ADFF5C";
+			break;
+			//legal
+		case 'ELUDING':
+		case 'ESCAPE':
+		case 'FALSE REPORT':
+		case 'OBSTRUCT':
+		case 'VIOLATION OF COURT ORDER':
+		case 'WARRANT ARREST':
+			color = "#FFD700";
+			break;
+			//public /disturbance
+		case 'DISORDERLY CONDUCT':
+		case 'DISPUTE':
+		case 'DISTURBANCE':
+		case 'LOITERING':
+		case 'PUBLIC NUISANCE':
+		case 'TRESPASS':
+			color = "#DDA0DD";
+			break;
+			//vehicle
+		case 'COLLISION - HIT AND RUN - BIKE':
+		case 'DUI':
+		case 'TRAFFIC':
+			color = "#E0FFFF";
+			break;
+			//narcotics
+		case 'NARCOTICS':
+		case 'STAY OUT OF AREA OF DRUGS':
+			color = "#5CFFFF";
+			break;
+			//property
+		case 'LOST PROPERTY':
+		case 'OTHER PROPERTY':
+		case 'PROPERTY DAMAGE':
+		case 'RECOVERED PROPERTY':
+		case 'STOLEN PROPERTY':
+			color = "#9ACD32";
+			break;
+		default:
+			color = "#FFFFFF";
+	}
+	return color;
 };
