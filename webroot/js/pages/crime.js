@@ -310,6 +310,9 @@ var displayMonthYear = function(date) {
 };
 
 
+//this function takes the crime description and assigns it a color (for the circle map) 
+//each color is to display the category of crime each crime falls into. 
+//I have assigned main 16 categories - within a main category there are sub crime types that the switch case statement checks
 var assignColor = function(crimeType) {
 	var color = "";
 	switch (crimeType) {
