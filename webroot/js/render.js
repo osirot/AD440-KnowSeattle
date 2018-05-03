@@ -118,20 +118,18 @@ function render_page(name) {
             true);
          return;
       case "Crime":
-
          // showMap = false; //this hides the "toggle map" option in nav bar
          //update css only for this page to make google map larger and 
          //appear on top of table pages above will get reset back to original css 
          $("#right-content").css("width", "100%");
          $("#right-content").css("padding", "3%");
 
-
          //TODO: find where mobileSearch is and test for map in smaller screens 
          //$("#mobileSearch").css("float", "left");
          getCrimeDetailData(loc,
-            function(success) { update_div(leftContentDiv, success); },
-            function(error) { update_div(leftContentDiv, error); },
-            true);
+         function(success) { update_div(leftContentDiv, success); },
+         function(error) { update_div(leftContentDiv, error); },
+         true);
          return;
       case "Food":
          getFoodDetailData(loc,
@@ -354,4 +352,4 @@ var clearCircleMap = function() {
          value.setMap(null);
       });
    }
-}
+};
