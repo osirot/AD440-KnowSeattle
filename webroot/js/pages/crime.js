@@ -285,49 +285,63 @@ var assignColor = function(crimeType) {
     switch (crimeType) {
         //homicide 
         case 'HOMICIDE':
-            color = "#FF0000";
+            //color = "#FF0000";
+            color = "#D81E05";
             break;
             //robber/burglary
         case 'BURGLARY':
         case 'BURGLARY-SECURE PARKING-RES':
         case 'ROBBERY':
-            color = "#C71585";
+            //color = "#C71585";
+            //color = "#660066";
+            color = "#990099";
             break;
             //assault/injury
         case 'ASSAULT':
         case 'INJURY':
-            color = "#FFB6C1";
+            //color = "#FFB6C1";
+            color = "#FF77A8 ";
             break;
             //larceny-theft
         case 'MAIL THEFT':
         case 'PICKPOCKET':
         case 'PURSE SNATCH':
         case 'SHOPLIFTING':
-            color = "#5C5CFF";
+            //color = "#5C5CFF";
+            //color = "#5CADFF";
+            color = "#9933ff";
             break;
             //vehicle theft
         case 'BIKE THEFT':
         case 'CAR PROWL':
         case 'VEHICLE THEFT':
-            color = "#5CADFF";
+            //color = "#5CADFF";
+            color = "#0000ff";
             break;
             //threats
         case 'THREATS':
-            color = "#ff8c00";
+            //color = "#ff8c00";
+            //color = "#FCA311";
+            color = "#ffff00";
             break;
             //WEAPON
         case 'WEAPON':
-            color = "#B0C4DE";
+            //color = "#B0C4DE";
+            //color = "#827e9d";
+            //color = "#9933ff";
+            color = "#ff9900";
             break;
             //PROSTITUTION
         case 'PROSTITUTION':
         case 'STAY OUT OF AREA OF PROSTITUTION':
-            color = "#FF5CFF";
+            //color = "#FF5CFF";
+            color = "#ff00f2";
             break;
             //narcotics
         case 'NARCOTICS':
         case 'STAY OUT OF AREA OF DRUGS':
-            color = "#5CFFFF";
+            //color = "#5CFFFF";
+            color = "#00ffff";
             break;
             //property
             //case 'LOST PROPERTY':
@@ -335,7 +349,8 @@ var assignColor = function(crimeType) {
         case 'PROPERTY DAMAGE':
             //case 'RECOVERED PROPERTY':
         case 'STOLEN PROPERTY':
-            color = "#9ACD32";
+            //color = "#9ACD32";
+            color = "#00ff00";
             break;
         default: //default is set to white - should not land here if crime type was checked properly
             color = "#FFFFFF";
@@ -402,10 +417,10 @@ var createCircle = function(arrayOfCirlces, color, dataObject) {
         strokeOpacity: 1,
         strokeWeight: 4,
         fillColor: color,
-        fillOpacity: 0.2,
+        fillOpacity: 0.8,
         map: gmap,
         center: new google.maps.LatLng(dataObject.latitude, dataObject.longitude),
-        radius: 5,
+        radius: 10,
         draggable: false
     });
     arrayOfCirlces.push(crimeCircle); //this array should be cleared out in the render.js page before crime loads again

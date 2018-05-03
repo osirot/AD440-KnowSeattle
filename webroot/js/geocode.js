@@ -22,7 +22,7 @@ function initMap() {
             zoom: 13,
             center: loc,
             scroll: false,
-            mapTypeId: 'roadmap'
+            mapTypeId: 'hybrid'
          });
          //Stand up the google services
          geocoder = new google.maps.Geocoder();
