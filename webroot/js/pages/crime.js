@@ -1,4 +1,4 @@
-//var heatmap; //not using the heatmap for now may come back to this
+//var heatmap; //heatmap variable -- not using the heatmap for now may come back to this
 var crimeCircleArray;
 
 function getCrimeDetailData(loc, success, error) {
@@ -6,6 +6,7 @@ function getCrimeDetailData(loc, success, error) {
     var loc_long = loc.lng;
     var radiusMeters = loc.rad;
 
+    //not using this heatmap at the moment -- using circle map instead may come back to this
     //this array holds google.maps.LatLng objects for each pair of lat/lon returned from seattle gov api call
     //var heatMapDataPoints = []; //not using the heatmap for now may come back to this
 
@@ -50,6 +51,7 @@ function getCrimeDetailData(loc, success, error) {
 
         $.each(data, function(index, value) {
 
+            //not using this heatmap at the moment -- using circle map instead may come back to this
             //add crime data points into the heat map array as LatLng objects
             //heatMapDataPoints.push(new google.maps.LatLng(value.latitude, value.longitude)); //not using the heatmap for now may come back to this
 
@@ -110,33 +112,16 @@ function getCrimeDetailData(loc, success, error) {
             }
         });
 
-        /* //not using the heatmap for now may come back to this
-        		//this console.log is for testing to see what is in the heatMapData array of crime lat/lon points
-        		console.log("logging heatMapDataPoints below expecting to be full of crime points");
-        		console.log(heatMapDataPoints);
-        		
-        		//set heatmap variable to a new heatmaplayer, set the heatlayer data to 
-        		//the heatMapDataPoints(holds crime LatLng objects) and set the heatmap to the gmap
-        		heatmap = new google.maps.visualization.HeatmapLayer({
-        			data: heatMapDataPoints,
-        			gradient: [
-        				'rgba(255, 0, 0, 0)',
-        				'rgba(255, 255, 0, 0.9)',
-        				'rgba(0, 255, 0, 0.7)',
-        				'rgba(173, 255, 47, 0.5)',
-        				'rgba(152, 251, 152, 0)',
-        				'rgba(152, 251, 152, 0)',
-        				'rgba(0, 0, 238, 0.5)',
-        				'rgba(186, 85, 211, 0.7)',
-        				'rgba(255, 0, 255, 0.9)',
-        				'rgba(255, 0, 0, 1)'
-        			],
-        			radius: 20
-        		});*/
+        /*
+        //not using this at the moment -- using circle map instead may come back to this
+        //this console.log is for testing to see what is in the heatMapData array of crime lat/lon points
+        console.log("logging heatMapDataPoints below expecting to be full of crime points");
+        console.log(heatMapDataPoints);
+        createHeateMap(heatMapDataPoints);
+        */
 
-        //this should display  =the size of the circle array for the map 
-        console.log(crimeCircleArray); //use for testing this should display 
-
+        //this should display the size of the circle array for the map 
+        console.log(crimeCircleArray); //use for testing
 
         $.each(grouped_data, function(index, value) {
             var simplePropertyRetriever = function(obj) {
@@ -396,10 +381,8 @@ var includeCrimeType = function(crimeType) {
         case 'NARCOTICS':
         case 'STAY OUT OF AREA OF DRUGS':
             //property
-            //case 'LOST PROPERTY':
             //case 'OTHER PROPERTY':
         case 'PROPERTY DAMAGE':
-            //case 'RECOVERED PROPERTY':
         case 'STOLEN PROPERTY':
             include = true;
             break;
@@ -426,4 +409,27 @@ var createCircle = function(arrayOfCirlces, color, dataObject) {
         draggable: false
     });
     arrayOfCirlces.push(crimeCircle); //this array should be cleared out in the render.js page before crime loads again
+};
+
+//not using this at the moment -- using circle map instead may come back to this
+//set heatmap variable to a new heatmaplayer, set the heatlayer data to 
+//the heatMapDataPoints(holds crime LatLng objects) and set the heatmap to the gmap
+var createHeateMap = function(dataPoints) {
+    heatmap = new google.maps.visualization.HeatmapLayer({
+        data: dataPoints,
+        gradient: [
+            'rgba(255, 0, 0, 0)',
+            'rgba(255, 255, 0, 0.9)',
+            'rgba(0, 255, 0, 0.7)',
+            'rgba(173, 255, 47, 0.5)',
+            'rgba(152, 251, 152, 0)',
+            'rgba(152, 251, 152, 0)',
+            'rgba(0, 0, 238, 0.5)',
+            'rgba(186, 85, 211, 0.7)',
+            'rgba(255, 0, 255, 0.9)',
+            'rgba(255, 0, 0, 1)'
+        ],
+        radius: 20
+    });
+    heatmap.setMap(gmap);
 };
