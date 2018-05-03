@@ -12,14 +12,9 @@ function getCrimeDetailData(loc, success, error) {
     //this array holds google.map.circle objects start out with an empty array when crime page loads
     crimeCircleArray = [];
 
-    //find date twelve months ago from today
-    var today = new Date();
-    var previousYear = today.getFullYear() - 1;
-    var sixMonthsAgo = new Date();
-    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-    console.log("previousYear: " + previousYear);
-    console.log("sixMonthsAgo: " + sixMonthsAgo);
-    console.log("today: " + today);
+    //find date 6 months ago from today
+    var sixMonthsAgo = new Date(); //this gets todays date
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6); //this sets the date to 6 months ago
 
     //this is for the table of crime data
     //Figure out the last six months and get in range
@@ -58,38 +53,16 @@ function getCrimeDetailData(loc, success, error) {
             //add crime data points into the heat map array as LatLng objects
             //heatMapDataPoints.push(new google.maps.LatLng(value.latitude, value.longitude)); //not using the heatmap for now may come back to this
 
-            //limit the array of crimes for now -- anything higher than 10 thousand will use a lot of computer CPU to run -- will come back to this
-            //var TwelveMonths = (value.year >= previousYear);
-            var sixMonths = (value.date_reported >= sixMonthsAgo.toISOString());
-            //console.log(sixMonths);
+            //compare the date of crime reported to the date six months ago. 
+            var sixMonths = (value.date_reported >= sixMonthsAgo.toISOString()); //we are calling .toISOString because time formats need to be the same
 
+            //check if crime type should be included in the circle map 
             var included = includeCrimeType(value.summarized_offense_description);
-            //console.log(included);
 
+            //if crime was reported 6 months ago create a circle for the google map to display each crime in included crime list
             if (sixMonths && included) {
-                //console.log(value.date_reported);
-                //console.log(TwelveMonths);
-
-
-
                 var circleColor = assignColor(value.summarized_offense_description);
-                //console.log(circleColor);//use for testing
-
-                // Add the circle for this crime to the map.
-                var crimeCircle = new google.maps.Circle({
-                    strokeColor: circleColor,
-                    strokeOpacity: 1,
-                    strokeWeight: 4,
-                    fillColor: circleColor,
-                    fillOpacity: 0.2,
-                    map: gmap,
-                    center: new google.maps.LatLng(value.latitude, value.longitude),
-                    radius: 5,
-                    draggable: false
-                });
-                crimeCircleArray.push(crimeCircle); //this array will be cleared out in the render page before crime loads again
-
-                count++;
+                createCircle(crimeCircleArray, circleColor, value);
             }
 
             var monthdate = new Date(value.date_reported.toString());
@@ -434,4 +407,23 @@ var includeCrimeType = function(crimeType) {
             include = false;
     }
     return include;
+};
+
+//this function creates a google map circle object for the circle map of crimes. 
+//the arrayOfCircles holds all of the circles that are created and this should get cleared before rendering a new page
+//the color parameter is the assigned color for the circle being created, and the dataObject is passed from the api call(grab lat/lon values) 
+var createCircle = function(arrayOfCirlces, color, dataObject) {
+    // Add the circle for this crime to the map.
+    var crimeCircle = new google.maps.Circle({
+        strokeColor: color,
+        strokeOpacity: 1,
+        strokeWeight: 4,
+        fillColor: color,
+        fillOpacity: 0.2,
+        map: gmap,
+        center: new google.maps.LatLng(dataObject.latitude, dataObject.longitude),
+        radius: 5,
+        draggable: false
+    });
+    arrayOfCirlces.push(crimeCircle); //this array should be cleared out in the render.js page before crime loads again
 };
