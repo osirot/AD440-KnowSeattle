@@ -64,9 +64,18 @@ function getCrimeDetailData(loc, success, error) {
             var included = includeCrimeType(value.summarized_offense_description);
 
             //if crime was reported 6 months ago create a circle for the google map to display each crime in included crime list
-            if (sixMonths && included && count <= 15000) { //limiting max size of array to 15000 to prevent lagging/crash of site
+            /*if (sixMonths && included && count <= 15000) { //limiting max size of array to 15000 to prevent lagging/crash of site
                 var circleColor = assignColor(value.summarized_offense_description);
                 createCircle(crimeCircleArray, circleColor, value);
+                count++;
+            }*/
+
+            if (sixMonths && included && count <= 15000) {
+                var circleColor = assignColor(value.summarized_offense_description);
+                crimeDataArray.push({
+                    center: new google.maps.LatLng(value.latitude, value.longitude),
+                    color: circleColor
+                });
                 count++;
             }
 
@@ -124,10 +133,17 @@ function getCrimeDetailData(loc, success, error) {
         */
 
         //this should display the size of the circle array for the map 
-        console.log(crimeCircleArray); //use for testing
+        //console.log(crimeCircleArray); //use for testing
+        console.log(crimeDataArray); //use for testing
 
         // Create the crime circle map legend and display on the map 
         createMapLegend();
+
+        //we are creating the circle map AFTER the $.each loop above to help speed up loading 
+        //loop through the Crime array of crimes in "included" categories and create circles for each
+        $.each(crimeDataArray, function(index, value) {
+            createCircle(crimeCircleArray, value);
+        });
 
 
 
@@ -401,16 +417,18 @@ var includeCrimeType = function(crimeType) {
 //this function creates a google map circle object for the circle map of crimes. 
 //the arrayOfCircles holds all of the circles that are created and this should get cleared before rendering a new page
 //the color parameter is the assigned color for the circle being created, and the dataObject is passed from the api call(grab lat/lon values) 
-var createCircle = function(arrayOfCirlces, color, dataObject) {
+//var createCircle = function(arrayOfCirlces, color, dataObject) {
+var createCircle = function(arrayOfCirlces, cimeDataObject) {
     // Add the circle for this crime to the map.
     var crimeCircle = new google.maps.Circle({
-        strokeColor: color,
+        //strokeColor: cimeDataObject.color,
+        strokeColor: cimeDataObject.color, //outline in black
         strokeOpacity: 1,
         strokeWeight: 4,
-        fillColor: color,
-        fillOpacity: 0.8,
+        fillColor: cimeDataObject.color,
+        fillOpacity: 1,
         map: gmap,
-        center: new google.maps.LatLng(dataObject.latitude, dataObject.longitude),
+        center: cimeDataObject.center,
         radius: 10,
         draggable: false
     });
