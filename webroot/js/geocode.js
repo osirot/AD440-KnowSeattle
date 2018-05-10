@@ -1,7 +1,7 @@
 var resultString = "";
 var miles = true;
 var infoWindow, geocoder;
-var detailZoom = 13;
+var detailZoom = 16;
 var gmap;
 var geocode_markers = [];
 
@@ -19,10 +19,11 @@ function initMap() {
    $("#right-content").bind("animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd",
       function() {
          gmap = new google.maps.Map(document.getElementById('map'), {
-            zoom: 13,
+            zoom: 14,
             center: loc,
             scroll: false,
-            mapTypeId: 'hybrid'
+            mapTypeId: 'roadmap',
+            mapTypeControl: false
          });
          //Stand up the google services
          geocoder = new google.maps.Geocoder();

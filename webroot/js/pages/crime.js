@@ -10,6 +10,8 @@ function getCrimeDetailData(loc, success, error) {
     //this array holds google.maps.LatLng objects for each pair of lat/lon returned from seattle gov api call
     //var heatMapDataPoints = []; //not using the heatmap for now may come back to this
 
+    //this array holds the data of specific crimes in top 10 categories. (not all crimes are in array)
+    var crimeDataArray = [];
     //this array holds google.map.circle objects start out with an empty array when crime page loads
     crimeCircleArray = [];
 
@@ -47,7 +49,7 @@ function getCrimeDetailData(loc, success, error) {
         }
         var grouped_data = [];
 
-        var count = 0; //this is used to limit the crime circle array for now to 10 thousand to prevent CPU spike
+        var count = 0; //this is used to limit the crime circle array for now to 15 thousand to prevent CPU spike/site crash
 
         $.each(data, function(index, value) {
 
@@ -62,9 +64,10 @@ function getCrimeDetailData(loc, success, error) {
             var included = includeCrimeType(value.summarized_offense_description);
 
             //if crime was reported 6 months ago create a circle for the google map to display each crime in included crime list
-            if (sixMonths && included) {
+            if (sixMonths && included && count <= 15000) { //limiting max size of array to 15000 to prevent lagging/crash of site
                 var circleColor = assignColor(value.summarized_offense_description);
                 createCircle(crimeCircleArray, circleColor, value);
+                count++;
             }
 
             var monthdate = new Date(value.date_reported.toString());
@@ -122,6 +125,11 @@ function getCrimeDetailData(loc, success, error) {
 
         //this should display the size of the circle array for the map 
         console.log(crimeCircleArray); //use for testing
+
+        // Create the crime circle map legend and display on the map 
+        createMapLegend();
+
+
 
         $.each(grouped_data, function(index, value) {
             var simplePropertyRetriever = function(obj) {
@@ -279,81 +287,64 @@ var displayMonthYear = function(date) {
 
 //this function takes the crime description and assigns it a color (for the circle map) 
 //each color is to display the category of crime each crime falls into. 
-//I have assigned main 16 categories - within a main category there are sub crime types that the switch case statement checks
+//I have assigned main 10 categories - within a main category there are sub crime types that the switch case statement checks
 var assignColor = function(crimeType) {
     var color = "";
     switch (crimeType) {
         //homicide 
         case 'HOMICIDE':
-            //color = "#FF0000";
-            color = "#D81E05";
+            color = "#D81E05"; //red
             break;
             //robber/burglary
         case 'BURGLARY':
         case 'BURGLARY-SECURE PARKING-RES':
         case 'ROBBERY':
-            //color = "#C71585";
-            //color = "#660066";
-            color = "#990099";
+            color = "#990099"; //purple
             break;
             //assault/injury
         case 'ASSAULT':
         case 'INJURY':
-            //color = "#FFB6C1";
-            color = "#FF77A8 ";
+            color = "#FF77A8 "; //pink
             break;
             //larceny-theft
         case 'MAIL THEFT':
         case 'PICKPOCKET':
         case 'PURSE SNATCH':
         case 'SHOPLIFTING':
-            //color = "#5C5CFF";
-            //color = "#5CADFF";
-            color = "#9933ff";
+        case 'BIKE THEFT':
+            //color = "#9933ff"; //light purple
+            color = "#b5b0ff";
             break;
             //vehicle theft
-        case 'BIKE THEFT':
         case 'CAR PROWL':
         case 'VEHICLE THEFT':
-            //color = "#5CADFF";
-            color = "#0000ff";
+            color = "#0000ff"; //blue
             break;
             //threats
         case 'THREATS':
-            //color = "#ff8c00";
-            //color = "#FCA311";
-            color = "#ffff00";
+            color = "#ffff00"; //yellow
             break;
             //WEAPON
         case 'WEAPON':
-            //color = "#B0C4DE";
-            //color = "#827e9d";
-            //color = "#9933ff";
-            color = "#ff9900";
+            color = "#ff9900"; // orange
             break;
             //PROSTITUTION
         case 'PROSTITUTION':
         case 'STAY OUT OF AREA OF PROSTITUTION':
-            //color = "#FF5CFF";
-            color = "#ff00f2";
+            color = "#ff00f2"; //magenta
             break;
             //narcotics
         case 'NARCOTICS':
         case 'STAY OUT OF AREA OF DRUGS':
-            //color = "#5CFFFF";
-            color = "#00ffff";
+            color = "#00ffff"; //cyan
             break;
             //property
-            //case 'LOST PROPERTY':
-            // case 'OTHER PROPERTY':
         case 'PROPERTY DAMAGE':
-            //case 'RECOVERED PROPERTY':
         case 'STOLEN PROPERTY':
-            //color = "#9ACD32";
-            color = "#00ff00";
+            color = "#00ff00"; //green
             break;
         default: //default is set to white - should not land here if crime type was checked properly
-            color = "#FFFFFF";
+            color = "#FFFFFF"; //white
     }
     return color;
 };
@@ -447,4 +438,27 @@ var createHeateMap = function(dataPoints) {
         radius: 20
     });
     heatmap.setMap(gmap);
+};
+
+
+var createMapLegend = function() {
+    // Create the circle map legend and display on the map
+    var legend = document.createElement('div');
+    legend.id = 'legend';
+    var content = [];
+    content.push('<h3>Crime Types</h3>');
+    content.push('<p><div class="color red"></div>Homicide</p>');
+    content.push('<p><div class="color pink"></div>Assault/Injury</p>');
+    content.push('<p><div class="color orange"></div>Weapon</p>');
+    content.push('<p><div class="color yellow"></div>Threats</p>');
+    content.push('<p><div class="color green"></div>Property Damage/Stolen </p>');
+    content.push('<p><div class="color cyan"></div>Narcotics</p>');
+    content.push('<p><div class="color magenta"></div>Prostitution</p>');
+    content.push('<p><div class="color lightpurple"></div>Larceny-Theft</p>');
+    content.push('<p><div class="color blue"></div>Vehicle Theft/Car Prowl</p>');
+    content.push('<p><div class="color purple"></div>Robbery/Burglary</p>');
+    content.push('<p>*All data is within the past 6 months</p>');
+    legend.innerHTML = content.join('');
+    legend.index = 1;
+    gmap.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legend);
 };

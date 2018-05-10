@@ -351,5 +351,6 @@ var clearCircleMap = function(circleArray) {
       $.each(circleArray, function(index, value) {
          value.setMap(null);
       });
+      gmap.controls[google.maps.ControlPosition.LEFT_BOTTOM].clear();
    }
 };

@@ -25,6 +25,7 @@
   height: 400px;
  }
 
+
  html,
  body {
   height: 100%;
@@ -992,4 +993,69 @@
  #my-navbar {
   margin-bottom: 0px;
  }
+
+ /* ------------------------------------------------------
+      start of styling for the crimes map  
+   ---------------------------------------------------   */
+
+ #legend {
+  font-weight: bold;
+  font-size: 12px;
+  background: #fff;
+  padding: 10px;
+  margin: 10px;
+  border: 4px solid #000;
+ }
+
+ .color {
+  border: 1px solid;
+  height: 20px;
+  width: 30px;
+  margin-right: 3px;
+  float: left;
+ }
+
+ .red {
+  background: #D81E05;
+ }
+
+ .yellow {
+  background: #ffff00;
+ }
+
+ .orange {
+  background: #ff9900;
+ }
+
+ .green {
+  background: #00ff00;
+ }
+
+ .blue {
+  background: #0000ff;
+ }
+
+ .cyan {
+  background: #00ffff;
+ }
+
+ .purple {
+  background: #990099;
+ }
+
+ .lightpurple {
+  background: #b5b0ff;
+ }
+
+ .pink {
+  background: #FF77A8;
+ }
+
+ .magenta {
+  background: #ff00f2;
+ }
+
+ /* ------------------------------------------------------
+      end of styling for the crimes map 
+   ---------------------------------------------------   */
  
