@@ -1,5 +1,5 @@
 //var heatmap; //heatmap variable -- not using the heatmap for now may come back to this
-var crimeCircleArray;
+var crimeCircleArray; //keeping this as global variable to access in render.js page to clear array before page load
 
 function getCrimeDetailData(loc, success, error) {
     var loc_lat = loc.lat;
@@ -10,9 +10,10 @@ function getCrimeDetailData(loc, success, error) {
     //this array holds google.maps.LatLng objects for each pair of lat/lon returned from seattle gov api call
     //var heatMapDataPoints = []; //not using the heatmap for now may come back to this
 
+    //(helps with speed to have seperate array of crime data that is used when creating circles and populating the circle array)
     //this array holds the data of specific crimes in top 10 categories. (not all crimes are in array)
     var crimeDataArray = [];
-    //this array holds google.map.circle objects start out with an empty array when crime page loads
+    //this array holds google.map.circle objects start out with an empty array when crime page loads 
     crimeCircleArray = [];
 
     //find date 6 months ago from today
@@ -63,13 +64,8 @@ function getCrimeDetailData(loc, success, error) {
             //check if crime type should be included in the circle map 
             var included = includeCrimeType(value.summarized_offense_description);
 
-            //if crime was reported 6 months ago create a circle for the google map to display each crime in included crime list
-            /*if (sixMonths && included && count <= 15000) { //limiting max size of array to 15000 to prevent lagging/crash of site
-                var circleColor = assignColor(value.summarized_offense_description);
-                createCircle(crimeCircleArray, circleColor, value);
-                count++;
-            }*/
-
+            //if crime is within the last siz months, in the list of included crime types we want to display then add the
+            //crime to the array with assigned color and center lat/lon location that crime occured. 
             if (sixMonths && included && count <= 15000) {
                 var circleColor = assignColor(value.summarized_offense_description);
                 crimeDataArray.push({
@@ -134,7 +130,7 @@ function getCrimeDetailData(loc, success, error) {
 
         //this should display the size of the circle array for the map 
         //console.log(crimeCircleArray); //use for testing
-        console.log(crimeDataArray); //use for testing
+        //console.log(crimeDataArray); //use for testing
 
         // Create the crime circle map legend and display on the map 
         createMapLegend();
