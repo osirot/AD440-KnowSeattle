@@ -6,7 +6,7 @@ Author: Austin Amort
 function getPropertySummary(loc, success, error) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
-    if(this.readyState == 4 && this.status == 200) {
+    if (this.readyState == 4 && this.status == 200) {
       success(this.responseText);
     }
     // else {
@@ -24,13 +24,14 @@ function getPropertySummary(loc, success, error) {
 function getPropertyData(loc, success, error) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
-    if(this.readyState == 4 && this.status == 200) {
-        success(this.responseText);
+    if (this.readyState == 4 && this.status == 200) {
+      success(this.responseText);
     }
     else {
-        error("Loading....");
+      error("Loading....");
     }
   };
+  console.log(xhttp);
   var url = "property/detail?lat=" + loc.lat + "&long=" + loc.lng;
   xhttp.open("GET", url, true);
   xhttp.send();

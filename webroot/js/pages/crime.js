@@ -476,3 +476,24 @@ var createMapLegend = function() {
     legend.index = 1;
     gmap.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legend);
 };
+
+//this function is used to check if the heat map data is empty (called in render.js page) if not clear it before 
+//updating to new coords the heat map gets populated in the crime.js file. 
+//It should get cleared before rendering each new page 
+var clearHeatMap = function(heatmapObject) {
+    if (heatmapObject != null && heatmapObject.getData().j != []) {
+        heatmapObject.getData().j = [];
+        heatmapObject.setMap(null);
+    }
+};
+
+//this function is used for the circle map to clear out the circles for each crime before the new
+//page is rendered. function is called in render.js page before rendering new page. 
+var clearCircleMap = function(circleArray) {
+    if (circleArray != null) {
+        $.each(circleArray, function(index, value) {
+            value.setMap(null);
+        });
+        gmap.controls[google.maps.ControlPosition.LEFT_BOTTOM].clear();
+    }
+};

@@ -217,7 +217,7 @@
   border-radius: 50%;
   width: 80px;
   height: 80px;
-  animation: spin 1s linear infinite;
+  /*animation: spin 1s linear infinite;*/
  }
 
  .detail_loader {
@@ -229,7 +229,7 @@
   width: 300px;
   height: 300px;
   margin-left: 20%;
-  animation: spin 1s linear infinite;
+  /*animation: spin 1s linear infinite;*/
  }
 
  .tile:hover {
@@ -468,16 +468,17 @@
 
  .propertyfooter {}
 
- /* //////////////percentage circle starts here /////////////// */
-
+ /* //////////////percentage circle starts here /////////////// 
+  commenting this entire circle css out to test page - circle seems to not allow anything else to load
  /* /////////////////////////////////////////////////////////// */
 
- .progress-circle {
+ /*.progress-circle {
   font-size: 20px;
   margin: 20px;
   position: relative;
   /* so that children can be absolutely positioned */
-  padding: 0;
+
+ /* padding: 0;
   width: 6em;
   height: 6em;
   background-color: #F2E9E1;
@@ -501,7 +502,7 @@
 
  /* Text inside the control */
 
- .progress-circle span {
+ /*.progress-circle span {
   position: absolute;
   line-height: 6em;
   width: 6em;
@@ -513,18 +514,21 @@
 
  .left-half-clipper {
   /* a round circle */
-  border-radius: 50%;
+
+ /*border-radius: 50%;
   width: 6em;
   height: 6em;
   position: absolute;
   /* needed for clipping */
-  clip: rect(0, 6em, 6em, 3em);
+
+ /* clip: rect(0, 6em, 6em, 3em);
   /* clips the whole left half*/
- }
+
+ /*}
 
  /* when p>50, don't clip left half*/
 
- .progress-circle.over50 .left-half-clipper {
+ /*.progress-circle.over50 .left-half-clipper {
   clip: rect(auto, auto, auto, auto);
  }
 
@@ -532,27 +536,35 @@
   /*This is an overlayed square, that is made round with the border radius,
    then it is cut to display only the left half, then rotated clockwise
    to escape the outer clipping path.*/
-  position: absolute;
+
+ /*position: absolute;
   /*needed for clipping*/
-  clip: rect(0, 3em, 6em, 0);
+
+ /*clip: rect(0, 3em, 6em, 0);
   width: 6em;
   height: 6em;
   border-radius: 50%;
   border: 0.45em solid #E9967A;
   /*The border is 0.35 but making it larger removes visual artifacts */
-  /*background-color: #4D642D;*/
-  /* for debug */
-  box-sizing: border-box;
+
+ /*background-color: #4D642D;*/
+
+ /* for debug */
+
+ /*box-sizing: border-box;
 
  }
 
  /* Progress bar filling the whole right half for values above 50% */
 
+ /*
  .progress-circle.over50 .first50-bar {
   /*Progress bar for the first 50%, filling the whole right half*/
-  position: absolute;
+
+ /*position: absolute;
   /*needed for clipping*/
-  clip: rect(0, 6em, 6em, 3em);
+
+ /*clip: rect(0, 6em, 6em, 3em);
   background-color: #E9967A;
   border-radius: 50%;
   width: 6em;
@@ -561,11 +573,11 @@
 
  .progress-circle:not(.over50) .first50-bar {
   display: none;
- }
-
+ }*/
 
  /* Progress bar rotation position */
 
+ /*
  .progress-circle.p0 .value-bar {
   display: none;
  }
@@ -968,7 +980,7 @@
 
  .progress-circle.p100 .value-bar {
   transform: rotate(360deg);
- }
+ } */
 
  /* ////////////// percentage circle ends here /////////////// */
 

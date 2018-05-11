@@ -71,10 +71,10 @@ function render_page(name) {
 
    switch (name) {
       case "Home":
+         console.log("in the renders page home case loc: " + loc.lat + " " + loc.lng);
          render_tiles();
          return;
       case "Hospitals":
-         //resetRightContent(); //sets the css to style sheet specs
          str = getHospData(loc, true);
          break;
       case "Property":
@@ -107,6 +107,7 @@ function render_page(name) {
          getJobsData(loc,
             function(success) { update_div(leftContentDiv, success); },
             function(error) { update_div(leftContentDiv, error); });
+         str = "Loading.....";
          return;
       case "Concerts":
          getConcertData(loc,
@@ -121,7 +122,6 @@ function render_page(name) {
             true);
          return;
       case "Crime":
-         // showMap = false; //this hides the "toggle map" option in nav bar
          //update css only for this page to make google map larger and 
          //appear on top of table pages above will get reset back to original css 
          $("#right-content").css("width", "100%");
@@ -222,15 +222,10 @@ function get_summary(page) {
             false);
          break;
       case "Jobs":
-         sum += '<div class=\"loader\"></div>';
-         getJobsSummary(loc, function(totalJobs, avgCompany) {
-            $("#Jobs_tile").hide();
-            var html = "<li>Fulltime Jobs: " + totalJobs + "</li>" +
-               "<li>Avg Company: " + get_stars(avgCompany) +
-               "&nbsp;(" + avgCompany + ")</li>";
-            update_div("Jobs_tile", html);
-            $("#Jobs_tile").fadeIn("slow", function() {});
-         });
+         sum += "<li>Loading Jobs Data...</li>";
+         getJobsSummary(loc,
+            function(success) { update_div("Jobs_tile", success); },
+            function(error) { update_div("Jobs_tile", error); });
          break;
       case "Property":
          sum += '<li>Loading Data...</li>';
@@ -332,25 +327,4 @@ window.onhashchange = function() {
 var resetRightContent = function() {
    $("#right-content").css("width", "");
    $("#right-content").css("padding", "");
-};
-
-//this function is used to check if the heat map data is empty if not clear it before 
-//updating to new coords the heat map gets populated in the crime.js file. 
-//It should get cleared before rendering each new page 
-var clearHeatMap = function(heatmapObject) {
-   if (heatmapObject != null && heatmapObject.getData().j != []) {
-      heatmapObject.getData().j = [];
-      heatmapObject.setMap(null);
-   }
-};
-
-//this function is used for the circle map in crimes page to clear out the circles for each crime before the new
-//page is rendered
-var clearCircleMap = function(circleArray) {
-   if (circleArray != null) {
-      $.each(circleArray, function(index, value) {
-         value.setMap(null);
-      });
-      gmap.controls[google.maps.ControlPosition.LEFT_BOTTOM].clear();
-   }
 };
