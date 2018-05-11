@@ -43,16 +43,18 @@ function getJobsData(loc, success, error) {
 
    var indeed_options = getIndeedOptions(cur_zip);
 
-   var url = "http://api.indeed.com/ads/apisearch" + indeed_options;
 
-   var xhttp = new XMLHttpRequest();
+   var url = "https://api.indeed.com/ads/apisearch" + indeed_options;
+   console.log(url);
+
+   /*var xhttp = new XMLHttpRequest();
    xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
          success(this.responseText);
          document.getElementById("leftContentDiv").innerHTML = this.responseText;
       }
       else {
-         error("Loading....");
+         error("there was an error loading your http request");
       }
    };
    xhttp.open("GET", url, true);
@@ -60,7 +62,26 @@ function getJobsData(loc, success, error) {
    xhttp.onerror = function() {
       console.log("An error occurred opening the http request:");
       error("n error occurred opening the http request:.");
+   };*/
+
+   var xmlhttp = new XMLHttpRequest();
+
+   xmlhttp.onreadystatechange = function() {
+      if (xmlhttp.readyState == XMLHttpRequest.DONE) { // XMLHttpRequest.DONE == 4
+         if (xmlhttp.status == 200) {
+            document.getElementById("myDiv").innerHTML = xmlhttp.responseText;
+         }
+         else if (xmlhttp.status == 400) {
+            alert('There was an error 400');
+         }
+         else {
+            alert(xmlhttp.status);
+         }
+      }
    };
+
+   xmlhttp.open("GET", url, true);
+   xmlhttp.send();
 
 }
 

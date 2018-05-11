@@ -11,11 +11,11 @@ function getPublicArtData(loc, success, error, detailed) {
         data: {
             "$limit": 10000,
             "$where": "within_circle(geolocation, " + loc.lat + ", " + loc.lng + ", " +
-                    1500 + ")"
+                1500 + ")"
         }
-    }).done(function (data) {
+    }).done(function(data) {
         success(parsePublicArtFeatures(data, detailed));
-    }).fail(function () {
+    }).fail(function() {
         var out = '<div>There was a problem getting the culture data in your area. </div>';
         error(out);
     });
@@ -29,11 +29,11 @@ function getPublicArtSummary(loc, success, error) {
         data: {
             "$limit": 10000,
             "$where": "within_circle(geolocation, " + loc.lat + ", " + loc.lng + ", " +
-                    1500 + ")"
+                1500 + ")"
         }
-    }).done(function (data) {
+    }).done(function(data) {
         success(countPublicArtFeatures(data));
-    }).fail(function () {
+    }).fail(function() {
         error("There was an error getting the Public Art Summary");
     });
 }
@@ -47,7 +47,8 @@ function countPublicArtFeatures(data) {
         if (dat !== null) {
             if (typeMap[dat]) {
                 typeMap[dat]++;
-            } else {
+            }
+            else {
                 typeMap[dat] = 1;
             }
         }
@@ -75,7 +76,7 @@ function parsePublicArtFeatures(data) {
 
 function getArtData(dataMap) {
     var content = "<table class='hor-minimalist-b'><tr><th>Title</th><th>Artist Name</th><th>Classification</th><th>Address</th>" +
-            '<th>Location</th></tr>';
+        '<th>Location</th></tr>';
     for (var i = 0; i < dataMap.length; i++) {
         if (dataMap[i] !== null) {
             var title = dataMap[i].title == null ? " " : dataMap[i].title;
@@ -87,20 +88,20 @@ function getArtData(dataMap) {
             var address = dataMap[i].address == null ? "n/a" : dataMap[i].address;
             var description = dataMap[i].description == "''" ? "no description" : dataMap[i].description;
             content += '<tr><td><div class="tooltip">' + title +
-                    getDescriptionSpan(description) + '</div></td><td>' +
-                    artist_name + '</td><td>' +
-                    classification + '</td><td>' +
-                    address + '</td><td>' +
-                    location + '</td></tr>';
+                getDescriptionSpan(description) + '</div></td><td>' +
+                artist_name + '</td><td>' +
+                classification + '</td><td>' +
+                address + '</td><td>' +
+                location + '</td></tr>';
         }
     }
     content += "</table>";
     return content;
 }
 
-function getDescriptionSpan(description){
-   var content = "<span class='tooltiptext'>";
-   content += description;
-   content += "</span>";
-   return content;
+function getDescriptionSpan(description) {
+    var content = "<span class='tooltiptext'>";
+    content += description;
+    content += "</span>";
+    return content;
 }
