@@ -3,7 +3,7 @@
  * stats to the Jobs tile on home page, and prints detailed
  * info to the Jobs detail page.
  *
- * Author: Kellan Nealy + contributors
+ * Author: Kellan Nealy
  */
 
 // Global vars
@@ -12,7 +12,7 @@ var indeed_query = "";
 var job_radius_miles = 1;
 var job_type = "fulltime";
 var limit = 1000;
-var cur_zip = 98117;
+var cur_zip;
 
 // Glassdoor vars and JSON to avoid redundant API requests
 var total_company_requests = 0;
@@ -33,154 +33,31 @@ var jobs_in_area;
 var avg_company_rating;
 var industry_popularity = new Map();
 
-
-// handler function for Jobs Detail Page, passes html to both callbacks.
-// UPDATE: now supports async calling from anywhere in KnowSeattle.
-function getJobsData(loc, success, error) {
-   console.log("getJobsData function called here");
-   console.log("loc.lat:  " + loc.lat);
-   console.log("loc.lon: " + loc.lng);
-
-   var indeed_options = getIndeedOptions(cur_zip);
-
-
-   var url = "https://api.indeed.com/ads/apisearch" + indeed_options;
-   console.log(url);
-
-   /*var xhttp = new XMLHttpRequest();
-   xhttp.onreadystatechange = function() {
-      if (this.readyState == 4 && this.status == 200) {
-         success(this.responseText);
-         document.getElementById("leftContentDiv").innerHTML = this.responseText;
-      }
-      else {
-         error("there was an error loading your http request");
-      }
-   };
-   xhttp.open("GET", url, true);
-   console.log(xhttp);
-   xhttp.onerror = function() {
-      console.log("An error occurred opening the http request:");
-      error("n error occurred opening the http request:.");
-   };*/
-
-   var xmlhttp = new XMLHttpRequest();
-
-   xmlhttp.onreadystatechange = function() {
-      if (xmlhttp.readyState == XMLHttpRequest.DONE) { // XMLHttpRequest.DONE == 4
-         if (xmlhttp.status == 200) {
-            document.getElementById("myDiv").innerHTML = xmlhttp.responseText;
-         }
-         else if (xmlhttp.status == 400) {
-            alert('There was an error 400');
-         }
-         else {
-            alert(xmlhttp.status);
-         }
-      }
-   };
-
-   xmlhttp.open("GET", url, true);
-   xmlhttp.send();
-
-}
-
-
-function getJobsSummary(loc, success, error) {
-   console.log("getJobsSummary called here");
-   console.log("loc.lat:  " + loc.lat);
-   console.log("loc.lon: " + loc.lng);
-
-   var indeed_options = getIndeedOptions(cur_zip);
-
-}
-
-
-
-// clear glassdoor vars, indeed vars,
-// and vars to calculate average company rating.
-function clear_jobs_vars() {
-   rating_sum = 0.0;
-   total_matches_with_rating = 0;
-   total_company_requests = 0;
-   indeed_total_jobs = 0;
-   indeed_jobs_json = null;
-   indeed_jobs_array = null;
-   avg_rating = null;
-   total_company_requests = 0;
-   total_companies_recieved = 0;
-   industry_popularity = new Map();
-}
-
-
-
-function getIndeedOptions(zip) {
-   return "?publisher=9876703242051712" +
-      "&q=" + indeed_query +
-      "&l=" + zip +
-      "&sort=" +
-      "&radius=" + job_radius_miles +
-      "&st=" +
-      "&jt=" + job_type +
-      "&start=" +
-      "&limit=" + limit +
-      "&fromage=" +
-      "&filter=" +
-      "&latlong=1" + /* always return latlong */
-      "&co=us" + /* always in USA */
-      "&chnl=" +
-      "&userip=1.2.3.4" + /* dummy IP */
-      "&useragent=Mozilla/%2F4.0%28Firefox%29" +
-      "&v=2"; /* always v2 */
-}
-
-//this function is used when zip code of location is null
 function getJobsDefault() {
    return "<li>Full-time Jobs: ???</li><li>Avg Company: ???</li>";
 }
 
-/*
-
-function getGlassdoorOptions(companyName) {
-   return 't.p=114236&t.k=j1ERnurd9SI' +
-      '&userip=0.0.0.0' +
-      '&useragent=&format=json&v=1' +
-      '&action=employers' +
-      '&city=seattle&state=WA' +
-      '&q=' + companyName;
-} */
-
-
-/* CORS-anywhere API request */
-/*
-function doCORSRequest(options, printResult) {
-   var x = new XMLHttpRequest();
-   x.open(options.method, cors_api_url + options.url);
-   x.onerror = function() {
-      console.log("An error occurred opening the request:");
-   };
-   try {
-      x.onload = function() {
-         return printResult(x.responseText);
-      };
+function getJobsSummary(loc, callback) {
+   // clear vars to create clean requests system
+   clear_jobs_vars();
+   if (!loc.zip) {
+      return getJobsDefault();
    }
-   catch (err) {
-      console.log("An error occurred loading the response");
-   }
-
-   if (/^POST/i.test(options.method)) {
-      x.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-   }
-
-   try {
-      x.setRequestHeader('x-requested-with', 'XMLHTTPREQUEST');
-      x.send(options.data);
-   }
-   catch (err) {
-      console.log("An error occured sending the request");
-      console.log(cors_api_url + options.url);
-   }
-}*/
+   cur_zip = 98117;
+   var indeed_options = getIndeedOptions(cur_zip);
+   doCORSRequest({
+      method: 'GET',
+      url: "http://api.indeed.com/ads/apisearch" + indeed_options,
+      data: ""
+   }, function printResult(result) {
+      indeed_jobs_json = xmlToJSON.parseString(result);
+      indeed_total_jobs = 0;
+      indeed_total_jobs = indeed_jobs_json.response[0].totalresults[0]._text;
+      indeed_jobs_array = indeed_jobs_json.response[0].results[0].result;
+      add_indeed_cache(indeed_jobs_array);
+      getGlassdoorCompanies(indeed_total_jobs, indeed_jobs_array, callback);
+   });
+}
 
 /*
 function getGlassdoorCompanies(indeed_tot_jobs, indeed_jobs_arr, callback) {
@@ -189,7 +66,6 @@ function getGlassdoorCompanies(indeed_tot_jobs, indeed_jobs_arr, callback) {
       var jobTitle = indeed_jobs_arr[i].jobtitle[0]._text;
       var companyName = indeed_jobs_arr[i].company[0]._text;
       var glassdoorOptions = getGlassdoorOptions(companyName);
-      console.log("http://api.glassdoor.com/api/api.htm?" + glassdoorOptions);
 
       doCORSRequest({
          method: 'GET',
@@ -236,4 +112,138 @@ function getGlassdoorCompanies(indeed_tot_jobs, indeed_jobs_arr, callback) {
          }
       });
    }
-} */
+}*/
+
+// clear glassdoor vars, indeed vars,
+// and vars to calculate average company rating.
+function clear_jobs_vars() {
+   rating_sum = 0.0;
+   total_matches_with_rating = 0;
+   total_company_requests = 0;
+   indeed_total_jobs = 0;
+   indeed_jobs_json = null;
+   indeed_jobs_array = null;
+   avg_rating = null;
+   total_company_requests = 0;
+   total_companies_recieved = 0;
+   industry_popularity = new Map();
+}
+
+// handler function for Jobs Detail Page, passes html to both callbacks.
+// UPDATE: now supports async calling from anywhere in KnowSeattle.
+function getJobsData(loc, successCallback, errorCallback) {
+
+   var html = "";
+
+   var indeed_options = getIndeedOptions(98117);
+   var indeed_url = "https://api.indeed.com/ads/apisearch" + indeed_options;
+
+   $.ajax({ //do not include dataType in ajax to prevent preflight CORs request
+      url: indeed_url,
+      type: "GET",
+      crossDomain: true,
+      xhrFields: {
+         withCredentials: false
+      },
+      success: function(data) {
+         // Here's where you handle a successful response.
+         html += "<h1>Jobs In This Area:</h1>";
+
+         console.log(data);
+
+         //var indeedJobJson = xmlToJSON.parseString(data);
+
+         console.log(indeedJobJson);
+
+         successCallback(html);
+      },
+      error: function() {
+         // Here's where you handle an error response.
+         // Note that if the error was due to a CORS issue,
+         // this function will still fire, but there won't be any additional
+         // information about the error.
+         alert("failed ajax api request");
+      }
+   });
+}
+
+function getIndeedOptions(zip) {
+   return "?publisher=9876703242051712" +
+      "&q=" + indeed_query +
+      "&l=" + zip +
+      "&sort=" +
+      "&radius=" + job_radius_miles +
+      "&st=" +
+      "&jt=" + job_type +
+      "&start=" +
+      "&limit=" + limit +
+      "&fromage=" +
+      "&filter=" +
+      "&latlong=1" + /* always return latlong */
+      "&co=us" + /* always in USA */
+      "&chnl=" +
+      "&userip=1.2.3.4" + /* dummy IP */
+      "&useragent=Mozilla/%2F4.0%28Firefox%29" +
+      "&v=2"; /* always v2 */
+}
+
+function printResult(result) {
+   indeed_jobs_json = xmlToJSON.parseString(result);
+   console.log(indeed_jobs_json);
+   indeed_total_jobs = 0;
+   //indeed_total_jobs = indeed_jobs_json.response[0].totalresults[0]._text;
+   //console.log(indeed_total_jobs);
+   //indeed_jobs_array = indeed_jobs_json.response[0].results[0].result;
+   //console.log(indeed_jobs_array);
+   //add_indeed_cache(indeed_jobs_array);
+   //getGlassdoorCompanies(indeed_total_jobs, indeed_jobs_array, callback);
+}
+
+function createJobTable(htmlString) {
+
+}
+
+/*
+function getGlassdoorOptions(companyName) {
+   return 't.p=114236&t.k=j1ERnurd9SI' +
+      '&userip=0.0.0.0' +
+      '&useragent=&format=json&v=1' +
+      '&action=employers' +
+      '&city=seattle&state=WA' +
+      '&q=' + companyName;
+}*/
+
+
+
+
+/*
+// CORS-anywhere API request 
+function doCORSRequest(options, printResult) {
+   var x = new XMLHttpRequest();
+   x.open(options.method, cors_api_url + options.url);
+   x.onerror = function() {
+      console.log("An error occurred opening the request:");
+   };
+   try {
+      x.onload = function() {
+         return printResult(x.responseText);
+      };
+   }
+   catch (err) {
+      console.log("An error occurred loading the response");
+   }
+
+   if (/^POST/i.test(options.method)) {
+      x.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+   }
+
+   try {
+      x.setRequestHeader('x-requested-with', 'XMLHTTPREQUEST');
+      x.send(options.data);
+   }
+   catch (err) {
+      console.log("An error occured sending the request");
+      console.log(cors_api_url + options.url);
+   }
+}
+*/

@@ -71,7 +71,6 @@ function render_page(name) {
 
    switch (name) {
       case "Home":
-         console.log("in the renders page home case loc: " + loc.lat + " " + loc.lng);
          render_tiles();
          return;
       case "Hospitals":
@@ -107,7 +106,7 @@ function render_page(name) {
          getJobsData(loc,
             function(success) { update_div(leftContentDiv, success); },
             function(error) { update_div(leftContentDiv, error); });
-         //str = "Loading.....";
+         str = "Loading.....";
          return;
       case "Concerts":
          getConcertData(loc,
