@@ -1,7 +1,7 @@
 var resultString = "";
 var miles = true;
 var infoWindow, geocoder;
-var detailZoom = 13;
+var detailZoom = 16;
 var gmap;
 var geocode_markers = [];
 
@@ -17,60 +17,64 @@ var loc = {
 function initMap() {
    //Initialize and center map
    $("#right-content").bind("animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd",
-      function(){
+      function() {
          gmap = new google.maps.Map(document.getElementById('map'), {
-         zoom: 10,
-         center: loc,
-         scroll: false
-      });
-      //Stand up the google services
-      geocoder    = new google.maps.Geocoder();
-      infoWindow  = new google.maps.InfoWindow({map: gmap});
-
-      //Try to get the browser location
-      if (navigator.geolocation) {
-         navigator.geolocation.getCurrentPosition(function(position) {
-            loc = {
-               lat: position.coords.latitude,
-               lng: position.coords.longitude,
-               rad: 1500
-            };
-            reverseGeocodeAddress(geocoder, gmap, loc);
+            zoom: 14,
+            center: loc,
+            scroll: false,
+            mapTypeId: 'roadmap',
+            mapTypeControl: false
          });
-      } else {
-         console.error("Browser doesn't support Geolocation");
-      }
+         //Stand up the google services
+         geocoder = new google.maps.Geocoder();
+         infoWindow = new google.maps.InfoWindow({ map: gmap });
 
-      //Handle click events and maybe reverseGeocode the address
-      google.maps.event.addListener(gmap, 'click', function( event ){
-         loc.lat = event.latLng.lat();
-         loc.lng = event.latLng.lng();
-         loc.err = null;
-         loc.pid = null;
-         loc.zip = null;
-
-         if (event.placeId) {
-            loc.pid = event.placeId;
-            getLocationFromPlaceId(loc.pid, gmap);
-         } else {
-            reverseGeocodeAddress(geocoder, gmap, loc);
+         //Try to get the browser location
+         if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+               loc = {
+                  lat: position.coords.latitude,
+                  lng: position.coords.longitude,
+                  rad: 1500
+               };
+               reverseGeocodeAddress(geocoder, gmap, loc);
+            });
          }
-         // Enable scrolling zoom when map is in focus
-         this.setOptions({scrollwheel:true});
-      });
+         else {
+            console.error("Browser doesn't support Geolocation");
+         }
 
-      //Disable map scrollwheel when not selected
-      google.maps.event.addListener(gmap, 'mouseout', function(event){
-         this.setOptions({scrollwheel:false});
+         //Handle click events and maybe reverseGeocode the address
+         google.maps.event.addListener(gmap, 'click', function(event) {
+            loc.lat = event.latLng.lat();
+            loc.lng = event.latLng.lng();
+            loc.err = null;
+            loc.pid = null;
+            loc.zip = null;
+
+            if (event.placeId) {
+               loc.pid = event.placeId;
+               getLocationFromPlaceId(loc.pid, gmap);
+            }
+            else {
+               reverseGeocodeAddress(geocoder, gmap, loc);
+            }
+            // Enable scrolling zoom when map is in focus
+            this.setOptions({ scrollwheel: true });
+         });
+
+         //Disable map scrollwheel when not selected
+         google.maps.event.addListener(gmap, 'mouseout', function(event) {
+            this.setOptions({ scrollwheel: false });
+         });
+         //Address search bar, geocode button
+         document.getElementById('submit').addEventListener('click', function() {
+            geocodeUserInput(geocoder, gmap);
+         });
+         document.getElementById('submitMobile').addEventListener('click', function() {
+            geocodeUserInput(geocoder, gmap);
+         });
       });
-      //Address search bar, geocode button
-      document.getElementById('submit').addEventListener('click', function() {
-         geocodeUserInput(geocoder, gmap);
-      });
-      document.getElementById('submitMobile').addEventListener('click', function() {
-         geocodeUserInput(geocoder, gmap);
-      });
-   });
 }
 
 function getLocationFromPlaceId(placeId, gmap) {
@@ -79,7 +83,8 @@ function getLocationFromPlaceId(placeId, gmap) {
       if (status !== google.maps.places.PlacesServiceStatus.OK) {
          loc.err = "Failed to reverse Geocode location";
          console.error(status);
-      } else {
+      }
+      else {
          var arr = result.address_components;
          loc.err = null;
          loc.zip = null;
@@ -92,14 +97,15 @@ function getLocationFromPlaceId(placeId, gmap) {
 }
 
 function geocodeUserInput(geocoder, gmap) {
-   if(mediaQuery()){
+   if (mediaQuery()) {
       var address = document.getElementById('address').value; // get the value from the main search input
-   }else{
+   }
+   else {
       var address = document.getElementById('addressMobile').value; // get the value from the mobile search input
    }
 
    //TODO: Slider for radius, tickbox for meters/miles
-   geocoder.geocode({'address': address, 'componentRestrictions': {'locality': 'Seattle'}}, function(results, status) {
+   geocoder.geocode({ 'address': address, 'componentRestrictions': { 'locality': 'Seattle' } }, function(results, status) {
       if (status === 'OK') {
          var lat2, lon2;
          loc.err = null;
@@ -113,10 +119,12 @@ function geocodeUserInput(geocoder, gmap) {
          }
          if (results[0].place_id) {
             getLocationFromPlaceId(results[0].place_id, gmap);
-         } else if (neighborhood != null) {
+         }
+         else if (neighborhood != null) {
             reverseGeocodeAddress(geocoder, loc);
          }
-      } else {
+      }
+      else {
          loc.err = "Sorry, No Results";
       }
       updateDOM(gmap, loc);
@@ -138,17 +146,20 @@ function getZip(obj, loc) {
 function reverseGeocodeAddress(geocoder, gmap, loc) {
    if (!loc.lat || !loc.lng) {
       console.error("Location object lacked a latitude or longitude.");
-   } else {
-      var latlng = {lat: loc.lat, lng: loc.lng};
-      geocoder.geocode({'location': latlng}, function(results, status) {
+   }
+   else {
+      var latlng = { lat: loc.lat, lng: loc.lng };
+      geocoder.geocode({ 'location': latlng }, function(results, status) {
          if (status === 'OK') {
             loc.err = null;
             if (results[0]) {
                getZip(results[0].address_components, loc);
-            } else {
+            }
+            else {
                loc.err = "No results from reverseGeocodeAddress";
             }
-         } else {
+         }
+         else {
             loc.err = 'Geocoder failed due to: ' + status;
          }
          updateDOM(gmap, loc);
@@ -159,7 +170,8 @@ function reverseGeocodeAddress(geocoder, gmap, loc) {
 function updateDOM(gmap, loc) {
    if (loc.err != null) {
       resultString = loc.err;
-   } else {
+   }
+   else {
       infoWindow.setPosition(loc);
       infoWindow.setContent(resultString);
 
@@ -168,7 +180,7 @@ function updateDOM(gmap, loc) {
       // infowindow.setContent(results[1].formatted_address);
       // infowindow.open(map, marker);
 
-      gmap.setCenter({lat: loc.lat, lng: loc.lng});
+      gmap.setCenter({ lat: loc.lat, lng: loc.lng });
       gmap.setZoom(detailZoom);
       resultString = "latitude: " + loc.lat + "<br>longitude: " + loc.lng + "<br>radius: " + loc.rad;
       if (loc.zip) {
@@ -180,29 +192,31 @@ function updateDOM(gmap, loc) {
 }
 
 function get_gmap() {
-    if (gmap) {
-        return gmap;
-    } else {
-        console.log("No Google Map object found");
-        return null;
-    }
+   if (gmap) {
+      return gmap;
+   }
+   else {
+      console.log("No Google Map object found");
+      return null;
+   }
 }
 
 function getRadius(lat1, lon1, lat2, lon2, miles) {
    var R = 6371e3; // metres
    var φ1 = toRadians(lat1);
    var φ2 = toRadians(lat2);
-   var Δφ = toRadians(lat2-lat1);
-   var Δλ = toRadians(lon2-lon1);
+   var Δφ = toRadians(lat2 - lat1);
+   var Δλ = toRadians(lon2 - lon1);
 
-   var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+   var a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
       Math.cos(φ1) * Math.cos(φ2) *
-      Math.sin(Δλ/2) * Math.sin(Δλ/2);
-   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
    if (miles) {
       return Math.round(R * c * 0.000621371);
-   } else {
+   }
+   else {
       return Math.round(R * c);
    }
 }
